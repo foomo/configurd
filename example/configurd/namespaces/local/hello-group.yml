@@ -10,6 +10,9 @@ group:
         ingress:
           path: /services/hello
           host: localhost
+        secrets:
+          - secret: secret/helloworld
+            path: /secrets/test
     hi-service:
       overrides:
         args:
