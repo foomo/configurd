@@ -1,0 +1,5 @@
+service:
+  image: image-name # specifies the image name that will be used when addressing this service
+  tag: 1.12.0 # optional. if not specified, it's overriden by -t parameter. specific tag to use with this service if it needs to be hard coded
+  build: "docker build ." # command used to build this image (if needed)
+  chart: service # chart to be used with this image. referencing the configurd/charts directory

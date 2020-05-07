@@ -1,3 +1,4 @@
+{{- $pvc := printf "%s-pvc" .Release.Name }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,39 +16,18 @@ spec:
       app.kubernetes.io/part-of: {{ .Values.group }}
   template:
     metadata:
-      annotations:
-        {{- if .Values.secrets }}
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "{{ .Values.serviceAccount.name }}"
-        {{- range $secret := .Values.secrets }}
-        {{ $pathParts := split "/" $secret.path }}
-        {{ $filename := index $pathParts (printf "_%s" (sub (len $pathParts) 1 | toString)) }}
-        vault.hashicorp.com/agent-inject-secret-{{ $filename }}: "{{ $secret.secret }}"
-        {{- if $secret.path }}
-        vault.hashicorp.com/secret-volume-path-{{ $filename }}: "{{ trimSuffix $filename $secret.path }}"
-        {{- end }}
-        {{ $template := "with secret {{ $secret.secret }}" }}
-        vault.hashicorp.com/agent-inject-template-{{ $filename }}: |
-          {{ printf "{{ with secret %q }} {{ toJSON .Data.data }} {{ end }}" $secret.secret }}
-        {{- end }}
-        {{- end }}
       labels:
         app.kubernetes.io/name: {{ .Release.Name }}
         app.kubernetes.io/part-of: {{ .Values.group }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.args }}
           args:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.env }}
+            {{- toYaml .Values.args | nindent 12 }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- toYaml .Values.env | nindent 12 }}
           ports:
             - name: container-port
               containerPort: {{ .Values.service.containerPort }}
@@ -60,6 +40,17 @@ spec:
               port: container-port
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          {{- range .Values.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .path }}
+          {{- end }}
+      volumes:
+      {{- range .Values.volumeMounts }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ $pvc }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

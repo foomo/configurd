@@ -1,5 +1,4 @@
 service:
-  build:
-    command: "docker build application/"
-    image: foomo/configurd-hi
+  image: foomo/configurd-hi
   chart: example
+  build: "docker build application/"

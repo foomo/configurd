@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "{{ .Release.Name }}-pv"
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/part-of: {{ .Values.group }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: "{{ .Release.Name }}-{{ .Release.Revision }}"
+spec:
+  storageClassName: manual
+  capacity:
+    storage: {{ .Values.persistentVolume.size }}
+  {{- with .Values.persistentVolume.accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistentVolume.ReclaimPolicy }}
+  hostPath:
+    path: {{ .Values.persistentVolume.path }}

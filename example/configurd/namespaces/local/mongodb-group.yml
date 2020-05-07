@@ -1,0 +1,10 @@
+group:
+  services:
+    mongodb-service:
+      overrides:
+        persistentVolume:
+          size: 1Gi
+          path: /data
+          reclaimPolicy: Delete
+          accessModes:
+            - ReadWriteOnce
