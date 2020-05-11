@@ -3,16 +3,18 @@ group:
     hello-service:
       overrides:
         args:
-          - "--greeting=hehe"
+          - "--greeting=hello"
         service:
           containerPort: 80
           port: 80
         ingress:
           path: /services/hello
           host: localhost
+        serviceAccount:
+          name: test
         secrets:
           - secret: secret/helloworld
-            path: /secrets/test
+            # path: /secrets/test
     hi-service:
       overrides:
         args:

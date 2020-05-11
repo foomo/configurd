@@ -17,18 +17,21 @@ spec:
     metadata:
       annotations:
         {{- if .Values.secrets }}
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "{{ .Values.serviceAccount.name }}"
         {{- range $secret := .Values.secrets }}
-        {{ $pathParts := split "/" $secret.path }}
-        {{ $filename := index $pathParts (printf "_%s" (sub (len $pathParts) 1 | toString)) }}
-        vault.hashicorp.com/agent-inject-secret-{{ $filename }}: "{{ $secret.secret }}"
+        {{ $nameParts := split "/" $secret.secret }}
+        {{ $name := index $nameParts "_1" }}
         {{- if $secret.path }}
-        vault.hashicorp.com/secret-volume-path-{{ $filename }}: "{{ trimSuffix $filename $secret.path }}"
+        {{ $pathParts := split "/" $secret.path }}
+        {{ $name := index $pathParts (printf "_%s" (sub (len $pathParts) 1 | toString)) }}
+        vault.hashicorp.com/secret-volume-path-{{ $name }}: "{{ trimSuffix $name $secret.path }}"
         {{- end }}
-        {{ $template := "with secret {{ $secret.secret }}" }}
-        vault.hashicorp.com/agent-inject-template-{{ $filename }}: |
+        vault.hashicorp.com/agent-inject-secret-{{ $name }}: "{{ $secret.secret }}"
+        vault.hashicorp.com/agent-inject-template-{{ $name }}: |
           {{ printf "{{ with secret %q }} {{ toJSON .Data.data }} {{ end }}" $secret.secret }}
+        # vault.hashicorp.com/agent-inject-command-{{ $name }}: "cat /vault/secrets/{{ $name }}"
         {{- end }}
         {{- end }}
       labels:
@@ -48,6 +51,13 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          command:
+            - "cat /vault/secrets/helloworld"
+          # args:
+          #   - "/bin/sh"
+          #   - "-ec"
+          #   - "/hello"
+          #   - "--greeting=$(cat /vault/secrets/helloworld)"
           ports:
             - name: container-port
               containerPort: {{ .Values.service.containerPort }}
