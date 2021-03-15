@@ -7,6 +7,10 @@ squadron:
       name: nats
       version: 0.7.5
       repository: https://nats-io.github.io/k8s/helm/charts/
+    #values: @nats_values
+    # values: {{ yaml 'path/to/file.yaml' }}
+    #values:
+    #  robots.tx: {{ yaml 'path/to/file.yaml' }}
     values:
       foo: bar
   frontend:
@@ -22,6 +26,13 @@ squadron:
         ports:
           - {{ env .PORT | default 80 }}
 
+nats_values:
+  foo: bar
+  # …
+  # …
+  # …
+  # …
+
 # squadron up -n storefinder storefinder   = helm upgrage --install --create-namespace -n storefinder storefinder
 # squadron down -n storefinder storefinder = helm uninstall storefinder -n storefinder
 # squadron up -n storefinder storefinder storefinder-frontend --push
@@ -33,3 +44,6 @@ squadron:
 
 # squadron version
 # squadron help
+
+# TODO: 
+# - check custom template func loading for helm
