@@ -13,8 +13,11 @@ squadron:
     #  robots.tx: {{ yaml 'path/to/file.yaml' }}
     values:
       foo: bar
+      ignorepaths: 
+        {{ yaml 'path/to/file.yaml' }}
+    #values_file: path/to/file.yaml
   frontend:
-    chart: ${PWD}/../path/to/local/chart
+    chart: {{ env "PWD" | default 'latest' }}/../path/to/local/chart
     build: # same as docker-compose
       image: registry.your-company.com/path/to/image
       tag: {{ env "TAG" | default 'latest' }}
