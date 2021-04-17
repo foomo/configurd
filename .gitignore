@@ -121,5 +121,8 @@ modules.xml
 .history
 
 .todo
+.squadron
+
+bin
 
 # End of https://www.gitignore.io/api/go,jetbrains+all,visualstudiocode

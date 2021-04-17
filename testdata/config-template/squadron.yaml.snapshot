@@ -1,0 +1,38 @@
+version: "1.0"
+global:
+  host: mycompany.com
+squadron:
+  frontend:
+    chart:
+      name: mychart
+      repository: http://helm.mycompany.com/repository
+      version: 0.1.0
+    builds:
+      default:
+        image: docker.mycompany.com/mycomapny/frontend
+        tag: latest
+    values:
+      base64: MTIzNDU2Nzg5MA==
+      env: UTF-8
+      global: mycompany.com
+      image:
+        repository: docker.mycompany.com/mycomapny/frontend
+        tag: latest
+      values: |
+        foo: bar
+        bar:
+          - foo
+          - bar
+  frontend-admin:
+    chart:
+      name: mychart
+      repository: http://helm.mycompany.com/repository
+      version: 0.1.0
+    builds:
+      default:
+        image: docker.mycompany.com/mycomapny/frontend-admin
+        tag: latest
+    values:
+      image:
+        repository: docker.mycompany.com/mycomapny/frontend-admin
+        tag: latest

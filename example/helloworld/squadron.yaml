@@ -1,0 +1,15 @@
+version: "1.0"
+
+squadron:
+  app:
+    chart: ./chart
+    builds:
+      default:
+        tag: latest
+        context: ./app
+        image: helloworld/app
+    values:
+      image: "{{ .Squadron.app.builds.default.image }}:{{ .Squadron.app.builds.default.tag }}"
+      service:
+        ports:
+          - 80

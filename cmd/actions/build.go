@@ -1,41 +1,51 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	"github.com/foomo/squadron"
 )
 
 func init() {
-	buildCmd.Flags().BoolVarP(&flagPush, "push", "p", false, "Pushes the built service to the registry")
+	buildCmd.Flags().BoolVarP(&flagPush, "push", "p", false, "pushes built squadron units to the registry")
 }
 
-var flagPush bool
+var (
+	buildCmd = &cobra.Command{
+		Use:     "build [UNIT...]",
+		Short:   "build or rebuild squadron units",
+		Example: "  squadron build frontend backend",
+		Args:    cobra.MinimumNArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return build(args, cwd, flagFiles, flagPush)
+		},
+	}
+)
 
-var buildCmd = &cobra.Command{
-	Use:   "build [SERVICE]",
-	Short: "Build a service with a given tag",
-	Args:  cobra.MinimumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		_, err := build(args[0], flagPush)
-		return err
-	},
-}
-
-func build(service string, push bool) (string, error) {
-	svc, err := sq.Service(service)
+func build(args []string, cwd string, files []string, push bool) error {
+	sq, err := squadron.New(cwd, "", files)
 	if err != nil {
-		return "", fmt.Errorf("could not find service: %w", err)
+		return err
 	}
 
-	out, err := sq.Build(svc)
+	units, err := parseUnitArgs(args, sq.GetUnits())
 	if err != nil {
-		return out, err
+		return err
+	}
+
+	for _, unit := range units {
+		if err := unit.Build(); err != nil {
+			return err
+		}
 	}
 
 	if push {
-		return sq.Push(svc)
+		for _, unit := range units {
+			if err := unit.Push(); err != nil {
+				return err
+			}
+		}
 	}
 
-	return out, nil
+	return nil
 }

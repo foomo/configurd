@@ -1,0 +1,21 @@
+version: "1.0"
+
+squadron:
+  frontend:
+    chart:
+      version: 0.2.0
+    builds:
+      service:
+        tag: 0.2.0
+        args:
+          - "bar=baz"
+          - "baz=baz"
+    values:
+      service:
+        ports:
+          - 8080
+      ingress:
+        hosts:
+          - name: mycompany.com
+            path: /foo
+            port: 8080

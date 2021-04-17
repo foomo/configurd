@@ -1,0 +1,31 @@
+version: "1.0"
+squadron:
+  frontend:
+    chart:
+      name: mychart
+      repository: http://helm.mycompany.com/repository
+      version: 0.2.0
+    builds:
+      service:
+        image: docker.mycompany.com/mycomapny/frontend
+        tag: 0.2.0
+        dockerfile: Dockerfile
+        args:
+          - foo=foo
+          - bar=bar
+          - bar=baz
+          - baz=baz
+    values:
+      image: docker.mycompany.com/mycomapny/frontend:latest
+      ingress:
+        hosts:
+          - name: mycompany.com
+            path: /
+            port: 80
+          - name: mycompany.com
+            path: /foo
+            port: 8080
+      service:
+        ports:
+          - 80
+          - 8080

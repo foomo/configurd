@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/apps/v1"
 )
 
@@ -14,8 +13,8 @@ type KubeCmd struct {
 	Cmd
 }
 
-func NewKubeCommand(l *logrus.Entry) *KubeCmd {
-	return &KubeCmd{*NewCommand(l, "kubectl")}
+func NewKubeCommand() *KubeCmd {
+	return &KubeCmd{*NewCommand("kubectl")}
 }
 
 func (c KubeCmd) RollbackDeployment(deployment string) *Cmd {

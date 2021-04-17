@@ -11,8 +11,7 @@ var version = "latest"
 var (
 	versionCmd = &cobra.Command{
 		Use:   "version",
-		Short: "prints cli version",
-		Long:  "prints the current installed cli version",
+		Short: "show version information",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(version)
 		},

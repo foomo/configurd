@@ -1,9 +1,0 @@
-service:
-  build:
-    image: foomo/squadron-hi
-    command: "docker build application/"
-  chart:
-    name: example
-    repository: file://./squadron/charts/example
-    # path to the chart dir relative to the base path (example/)
-    version: 0.2.3

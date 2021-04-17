@@ -3,7 +3,7 @@ version: "1.0"
 prefix: storefinder # optional
 squadron:
   nats:
-    chart: 
+    chart:
       name: nats
       version: 0.7.5
       repository: https://nats-io.github.io/k8s/helm/charts/
@@ -20,14 +20,14 @@ squadron:
     chart: {{ env "PWD" | default 'latest' }}/../path/to/local/chart
     build: # same as docker-compose
       image: registry.your-company.com/path/to/image
-      tag: {{ env "TAG" | default 'latest' }}
-      context: .
+      tag: {{ env "TAG" }}
+      context: ${PWD}
       dockefile: path/to/dockerfile
     values:
-      image: "{{ .Squadron.build.image }}:{{ .Squadron.build.tag }}"
+      image: "{{ .Squadron.frontend.Build.target }}:{{ .Squadron.frontend.Build.tag }}"
       service:
         ports:
-          - {{ env .PORT | default 80 }}
+          - {{ env "PORT" }}
 
 nats_values:
   foo: bar
@@ -43,7 +43,7 @@ nats_values:
 # squadron build ..
 # squadron generate .. --tgz
 
-# (squadron init ..) 
+# (squadron init ..)
 
 # squadron version
 # squadron help
